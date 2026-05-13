@@ -1,0 +1,72 @@
+erDiagram
+  User {
+    string id PK
+    string clientToken UK
+    string email
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  QuizSession {
+    string id PK
+    string userId FK
+    QuizStatus status
+    string currentStep
+    string[] completedSteps
+    Gender gender
+    FitnessGoal primaryGoal
+    int age
+    decimal heightCm
+    decimal weightKg
+    decimal targetWeightKg
+    ActivityFrequency activityFrequency
+    json healthContext
+    datetime completedAt
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  Assessment {
+    string id PK
+    string sessionId UK
+    string userId FK
+    decimal bmi
+    string bmiCategory
+    int bmr
+    int dailyCalories
+    decimal estimatedWeeks
+    datetime targetDate
+    decimal targetWeightKg
+    json recommendation
+    json predictionCurve
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  Subscription {
+    string id PK
+    string userId UK
+    SubscriptionStatus status
+    string provider
+    datetime currentPeriodEnd
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  PaymentEvent {
+    string id PK
+    string subscriptionId FK
+    string sessionId
+    string idempotencyKey UK
+    int amountCents
+    string currency
+    PaymentStatus status
+    json rawPayload
+    datetime createdAt
+  }
+
+  User ||--o{ QuizSession : owns
+  User ||--o{ Assessment : receives
+  User ||--o| Subscription : has
+  QuizSession ||--o| Assessment : produces
+  Subscription ||--o{ PaymentEvent : records
