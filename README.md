@@ -6,7 +6,7 @@
 
 部署目标建议使用 Vercel + Supabase PostgreSQL。
 
-- Demo URL: `https://<your-vercel-domain>`
+- Demo URL: `https://health-quiz-funnel-lovat.vercel.app`
 - 付费测试 sessionId: `paid_demo_session_001`
 - 付费测试 clientToken: `paid-demo-client`
 
@@ -119,7 +119,7 @@ curl -X POST http://localhost:3000/api/pay \
 线上替换域名：
 
 ```bash
-curl -X POST https://<your-vercel-domain>/api/pay \
+curl -X POST https://health-quiz-funnel-lovat.vercel.app/api/pay \
   -H "Content-Type: application/json" \
   -d '{"sessionId":"SESSION_ID","idempotencyKey":"reviewer-pay-001"}'
 ```
