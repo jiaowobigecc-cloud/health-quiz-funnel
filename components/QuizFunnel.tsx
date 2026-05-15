@@ -104,15 +104,17 @@ export function QuizFunnel() {
       const savedSessionId = window.localStorage.getItem(sessionIdKey);
 
       if (savedSessionId) {
-        const restored = await api<{ session: SessionState }>(`/api/sessions/${savedSessionId}`);
-        setSession(restored.session);
-        setStep(restored.session.status === "COMPLETED" ? "results" : restored.session.currentStep);
+        const restored = await restoreSavedSession(savedSessionId);
+        if (restored) {
+          setSession(restored.session);
+          setStep(restored.session.status === "COMPLETED" ? "results" : restored.session.currentStep);
 
-        if (restored.session.status === "COMPLETED") {
-          await loadResults(restored.session.sessionId);
+          if (restored.session.status === "COMPLETED") {
+            await loadResults(restored.session.sessionId);
+          }
+
+          return;
         }
-
-        return;
       }
 
       const clientToken = getOrCreateClientToken();
@@ -130,6 +132,15 @@ export function QuizFunnel() {
       setError(getErrorMessage(currentError));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function restoreSavedSession(savedSessionId: string) {
+    try {
+      return await api<{ session: SessionState }>(`/api/sessions/${savedSessionId}`);
+    } catch {
+      window.localStorage.removeItem(sessionIdKey);
+      return null;
     }
   }
 
