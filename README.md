@@ -26,6 +26,14 @@ npm run dev
 
 如果本机暂时没有 PostgreSQL，也可以不创建 `.env` 直接运行 `npm run dev`。项目会启用仅供本地演示的内存仓库，并预置 `paid_demo_session_001`；线上部署和正式评审请务必配置 PostgreSQL `DATABASE_URL`。
 
+质量检查：
+
+```bash
+npm run typecheck
+npm run test
+npm run build
+```
+
 ## 核心 API
 
 统一错误结构：
@@ -108,6 +116,14 @@ curl http://localhost:3000/api/sessions/paid_demo_session_001/results
 
 返回 `access: "FULL"`，包含完整计划。
 
+### 健康检查
+
+```bash
+curl https://health-quiz-funnel-lovat.vercel.app/api/health
+```
+
+用于确认线上函数可以访问数据库，并且 `paid_demo_session_001` 已准备好。
+
 ### 模拟支付回调
 
 ```bash
@@ -129,6 +145,8 @@ curl -X POST https://health-quiz-funnel-lovat.vercel.app/api/pay \
 ## 数据库 Schema
 
 Mermaid 图见 [docs/schema.mmd](docs/schema.mmd)。
+
+Prisma schema 见 [prisma/schema.prisma](prisma/schema.prisma)，初始化迁移 SQL 见 [prisma/migrations/20260515000000_init/migration.sql](prisma/migrations/20260515000000_init/migration.sql)。
 
 ```mermaid
 erDiagram
