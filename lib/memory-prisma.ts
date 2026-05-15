@@ -114,6 +114,23 @@ export function createMemoryPrisma() {
       async findUnique(args: any) {
         const user = store.users.find((item) => item.clientToken === args.where.clientToken || item.id === args.where.id);
         return user ? includeUser(user, args.include, store) : null;
+      },
+      async create(args: any) {
+        const user = {
+          id: args.data.id ?? makeId("user"),
+          clientToken: args.data.clientToken,
+          email: args.data.email ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        store.users.push(user);
+        return includeUser(user, args.include, store);
+      },
+      async update(args: any) {
+        const user = store.users.find((item) => item.id === args.where.id || item.clientToken === args.where.clientToken);
+        if (!user) throw new Error("User not found");
+        Object.assign(user, cleanUpdate(args.data), { updatedAt: new Date() });
+        return includeUser(user, args.include, store);
       }
     },
     subscription: {

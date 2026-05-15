@@ -9,24 +9,30 @@ export async function POST(request: Request) {
   if (!parsed.success) return validationProblem(parsed.error);
 
   const clientToken = parsed.data.clientToken ?? randomUUID();
-  const user = await prisma.user.upsert({
+  const existingUser = await prisma.user.findUnique({
     where: { clientToken },
-    update: parsed.data.email ? { email: parsed.data.email } : {},
-    create: {
-      clientToken,
-      email: parsed.data.email,
-      subscription: {
-        create: { status: "FREE" }
-      }
-    },
     include: { subscription: true }
   });
 
-  const subscription =
-    user.subscription ??
-    (await prisma.subscription.create({
-      data: { userId: user.id, status: "FREE" }
-    }));
+  const user = existingUser
+    ? await prisma.user.update({
+        where: { id: existingUser.id },
+        data: parsed.data.email ? { email: parsed.data.email } : {},
+        include: { subscription: true }
+      })
+    : await prisma.user.create({
+        data: {
+          clientToken,
+          email: parsed.data.email
+        },
+        include: { subscription: true }
+      });
+
+  const subscription = await prisma.subscription.upsert({
+    where: { userId: user.id },
+    update: {},
+    create: { userId: user.id, status: "FREE" }
+  });
 
   let session = await prisma.quizSession.findFirst({
     where: { userId: user.id, status: "DRAFT" },
