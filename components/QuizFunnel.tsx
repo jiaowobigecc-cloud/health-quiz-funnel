@@ -213,7 +213,10 @@ export function QuizFunnel() {
   }
 
   function resetLocalDemo() {
+    window.localStorage.removeItem(clientTokenKey);
     window.localStorage.removeItem(sessionIdKey);
+    setError(null);
+    setSession(null);
     setResults(null);
     void bootstrap();
   }
